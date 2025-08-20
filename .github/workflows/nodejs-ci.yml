@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        node-version: [16, 18]
+        node-version: [18]
 
     steps:
       - name: Checkout do código
@@ -35,7 +35,7 @@ jobs:
     needs: build
     runs-on: windows-latest
     steps:
-      - name: Deploy no Rendernpm 
+      - name: Deploy no Render npm 
         run: |
           curl -X POST "https://api.render.com/v1/services/<SERVICE_ID>/deploys" \
           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
