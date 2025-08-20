@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest]
         node-version: [16, 18]
 
     steps:
@@ -30,3 +30,13 @@ jobs:
 
       - name: Rodar testes
         run: npm test
+      
+  deploy:
+    needs: build
+    runs-on: windows-latest
+    steps:
+      - name: Deploy no Rendernpm 
+        run: |
+          curl -X POST "https://api.render.com/v1/services/<SERVICE_ID>/deploys" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -H "Accept: application/json"
