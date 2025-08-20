@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "dev": "ts-node-dev src/server.ts",
-    "build": "tsc && xcopy src\\config\\*.yaml dist\\config\\ /Y",
+    "copy-config": "node copy-config.js",
+    "build": "tsc && npm run copy-config",
     "start": "node dist/server.js"
   },
   "keywords": [],
