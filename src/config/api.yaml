@@ -1,0 +1,162 @@
+openapi: 3.0.0
+info:
+  title: Task Manager API
+  version: 1.0.0
+paths:
+  /health:
+    get:
+      summary: Verificar se o serviço está ativo
+      description: Retorna o status do serviço
+      responses:
+        '200':
+            description: Serviço ativo
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      example: OK
+        '503':
+            description: Serviço indisponível
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: string
+                      example: DOWN
+  /api/tasks:
+    post:
+      summary: Criar uma nova tarefa
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [pending, waiting, done]
+                priority:
+                  type: integer
+                  enum: [1,2,3,4,5]
+              required:
+                - title
+                - status
+                - priority
+      responses:
+        '201':
+          description: Tarefa criada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+    get:
+      summary: Listar todas as tarefas
+      responses:
+        '200':
+          description: Lista de tarefas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+
+  /api/tasks/{id}:
+    get:
+      summary: Obter tarefa por ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID da tarefa
+      responses:
+        '200':
+          description: Tarefa encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Tarefa não encontrada
+    put:
+      summary: Atualizar tarefa por ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                status:
+                  type: string
+                  enum: [pending, waiting, done]
+                priority:
+                  type: integer
+                  enum: [1,2,3,4,5]
+      responses:
+        '200':
+          description: Tarefa atualizada com sucesso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+        '404':
+          description: Tarefa não encontrada
+    delete:
+      summary: Deletar tarefa por ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      responses:
+        '204':
+          description: Tarefa deletada com sucesso
+        '404':
+          description: Tarefa não encontrada
+
+components:
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, waiting, done]
+        priority:
+          type: integer
+          enum: [1,2,3,4,5]
+      required:
+        - id
+        - title
+        - status
+        - priority
