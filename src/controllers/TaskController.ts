@@ -1,10 +1,13 @@
 import { Request, Response } from "express";
 import Service from "../services/TaskService";
+import { CreateTaskDto } from "../dtos/create-task.dto";
+import { UpdateTaskDto } from "../dtos/update-task.dto";
 
 class TaskController {
   static create(req: Request, res: Response) {
     try{
-      const task = Service.create(req.body);
+      const createTaskDto: CreateTaskDto = req.body;
+      const task = Service.create(createTaskDto);
       res.status(201).json(task);
     }
     catch(error: any){
@@ -35,13 +38,19 @@ class TaskController {
   }
 
   static async update(req: Request, res: Response) {
-    try{
-      const {id} = req.params;
-      const task = Service.update(id,req.body);
+    try {
+      const { id } = req.params;
+      const updateTaskDto: UpdateTaskDto = req.body;
+      const task = Service.update(id, updateTaskDto);
+
+      // Se o serviço retornar null, a tarefa não foi encontrada
+      if (!task) {
+        return res.status(404).json({ error: "task not found" });
+      }
+
       res.status(200).json(task);
-    }
-    catch(error: any){
-      res.status(400).json({error: error.message});
+    } catch (error: any) {
+      res.status(400).json({ error: error.message });
     }
   }
 

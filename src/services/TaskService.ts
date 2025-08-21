@@ -1,8 +1,10 @@
 import Repository from "../repositories/TaskRepository";
-import {Task} from "../models/tasks"
+import {Task} from "../models/tasks";
+import { CreateTaskDto } from "../dtos/create-task.dto";
+import { UpdateTaskDto } from "../dtos/update-task.dto";
 
 class TaskService {
-  static create(taskData: Omit<Task, "id">): Task {
+  static create(taskData: CreateTaskDto): Task {
     if(!taskData.title || taskData.title.trim() === ""){
         throw new Error("Missing Title");
     }
@@ -20,9 +22,9 @@ class TaskService {
     return task;  
   }
 
-  static update(id: string, data: Partial<Task>): Task | null {
-    if(id == null || data == null) return null;
-    const task = Repository.update(id,data);
+  static update(id: string, taskData: UpdateTaskDto): Task | null {
+    if(id == null || taskData == null) return null;
+    const task = Repository.update(id, taskData);
     return task;  
   }
 

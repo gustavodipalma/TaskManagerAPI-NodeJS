@@ -31,6 +31,11 @@ class TaskRepository {
         this.tasks.splice(index, 1);
         return true;
     }
+
+    // Método para limpar o repositório, usado apenas em testes
+    static clear() {
+        this.tasks = [];
+    }
 }
 
 export default TaskRepository;

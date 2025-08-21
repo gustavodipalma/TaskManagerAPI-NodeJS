@@ -20,14 +20,6 @@ paths:
                       example: OK
         '503':
             description: Serviço indisponível
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    status:
-                      type: string
-                      example: DOWN
   /api/tasks:
     post:
       summary: Criar uma nova tarefa
@@ -36,22 +28,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
-                status:
-                  type: string
-                  enum: [pending, waiting, done]
-                priority:
-                  type: integer
-                  enum: [1,2,3,4,5]
-              required:
-                - title
-                - status
-                - priority
+              $ref: '#/components/schemas/CreateTask'
       responses:
         '201':
           description: Tarefa criada com sucesso
@@ -59,6 +36,16 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Task'
+        '400':
+          description: Dados inválidos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: Missing Title
     get:
       summary: Listar todas as tarefas
       responses:
@@ -103,18 +90,7 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                title:
-                  type: string
-                description:
-                  type: string
-                status:
-                  type: string
-                  enum: [pending, waiting, done]
-                priority:
-                  type: integer
-                  enum: [1,2,3,4,5]
+              $ref: '#/components/schemas/UpdateTask'
       responses:
         '200':
           description: Tarefa atualizada com sucesso
@@ -133,8 +109,16 @@ paths:
             type: string
           required: true
       responses:
-        '204':
+        '200':
           description: Tarefa deletada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: task deleted
         '404':
           description: Tarefa não encontrada
 
@@ -160,3 +144,33 @@ components:
         - title
         - status
         - priority
+    CreateTask:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, waiting, done]
+        priority:
+          type: integer
+          enum: [1,2,3,4,5]
+      required:
+        - title
+        - status
+        - priority
+    UpdateTask:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        status:
+          type: string
+          enum: [pending, waiting, done]
+        priority:
+          type: integer
+          enum: [1,2,3,4,5]
