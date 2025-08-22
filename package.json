@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --runInBand",
     "dev": "ts-node-dev src/server.ts",
     "copy-config": "node copy-config.js",
     "build": "tsc && npm run copy-config",
@@ -16,6 +16,7 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^5.1.0",
+    "firebase-admin": "^13.4.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "uuid": "^11.1.0",

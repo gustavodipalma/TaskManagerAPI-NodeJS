@@ -5,9 +5,9 @@ import { CreateTaskDto } from "../../src/dtos/create-task.dto";
 
 describe("TaskController - Testes de Integração", () => {
 
-    // Limpa o banco de dados em memória antes de cada teste
-    beforeEach(() => {
-        TaskRepository.clear();
+    // Limpa o banco de dados ANTES de cada teste
+    beforeEach(async () => {
+        await TaskRepository.clear();
     });
 
     describe("POST /api/tasks", () => {

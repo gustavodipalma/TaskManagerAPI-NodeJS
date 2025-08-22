@@ -4,10 +4,10 @@ import { CreateTaskDto } from "../dtos/create-task.dto";
 import { UpdateTaskDto } from "../dtos/update-task.dto";
 
 class TaskController {
-  static create(req: Request, res: Response) {
+  static async create(req: Request, res: Response) {
     try{
       const createTaskDto: CreateTaskDto = req.body;
-      const task = Service.create(createTaskDto);
+      const task = await Service.create(createTaskDto);
       res.status(201).json(task);
     }
     catch(error: any){
@@ -17,7 +17,7 @@ class TaskController {
 
   static async getAll(req: Request, res: Response) {
     try{
-      const task = Service.getAll();
+      const task = await Service.getAll();
       res.status(200).json(task);
     }
     catch(error: any){
@@ -28,7 +28,7 @@ class TaskController {
   static async getById(req: Request, res: Response) {
     try{
       const {id} = req.params;
-      const task = Service.getById(id);
+      const task = await Service.getById(id);
       if(!task) return res.status(404).json({error: "task not found"});
       res.status(200).json(task);
     }
@@ -41,9 +41,8 @@ class TaskController {
     try {
       const { id } = req.params;
       const updateTaskDto: UpdateTaskDto = req.body;
-      const task = Service.update(id, updateTaskDto);
+      const task = await Service.update(id, updateTaskDto);
 
-      // Se o serviço retornar null, a tarefa não foi encontrada
       if (!task) {
         return res.status(404).json({ error: "task not found" });
       }
@@ -57,7 +56,7 @@ class TaskController {
   static async delete(req: Request, res: Response) {
     try{
       const {id} = req.params;
-      const task = Service.delete(id);
+      const task = await Service.delete(id);
       if(!task) return res.status(404).json({error: "task not found"});
       res.status(200).json({status: "task deleted"});
     }

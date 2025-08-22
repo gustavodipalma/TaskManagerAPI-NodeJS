@@ -1,40 +1,59 @@
-import {Task} from "../models/tasks";
-import {v4 as uuidv4} from "uuid";
+import { Task } from '../models/tasks';
+import { db } from '../config/firebase';
 
 class TaskRepository {
-    private static tasks: Task[] = [];
+    private static tasksCollection = db.collection('tasks');
 
-    static create(taskData: Omit<Task, "id">): Task {
-        const task: Task = {id: uuidv4(), ... taskData};
-        this.tasks.push(task);
-        return task;
+    static async create(taskData: Omit<Task, 'id'>): Promise<Task> {
+        const docRef = await this.tasksCollection.add(taskData);
+        // Atualiza o documento recém-criado para incluir seu próprio ID
+        await docRef.update({ id: docRef.id });
+        const snapshot = await docRef.get();
+        return snapshot.data() as Task;
     }
 
-    static getAll(): Task[] {
-        return this.tasks;
+    static async getAll(): Promise<Task[]> {
+        const snapshot = await this.tasksCollection.get();
+        return snapshot.docs.map(doc => doc.data() as Task);
     }
 
-    static getById(id: string): Task | null {
-        return this.tasks.find(t => t.id === id) || null;
+    static async getById(id: string): Promise<Task | null> {
+        const doc = await this.tasksCollection.doc(id).get();
+        if (!doc.exists) {
+            return null;
+        }
+        return doc.data() as Task;
     }
 
-    static update(id: string, data: Partial<Task>): Task | null {
-        const task = this.getById(id);
-        if(!task) return null;
-        Object.assign(task, data);
-        return task;
+    static async update(id: string, data: Partial<Omit<Task, 'id'>>): Promise<Task | null> {
+        const docRef = this.tasksCollection.doc(id);
+        const doc = await docRef.get();
+        if (!doc.exists) {
+            return null;
+        }
+        await docRef.update(data);
+        const updatedDoc = await docRef.get();
+        return updatedDoc.data() as Task;
     }
 
-    static delete(id: string): boolean {
-        const index = this.tasks.findIndex(t => t.id === id);
-        if(index === -1) return false;
-        this.tasks.splice(index, 1);
+    static async delete(id: string): Promise<boolean> {
+        const docRef = this.tasksCollection.doc(id);
+        const doc = await docRef.get();
+        if (!doc.exists) {
+            return false;
+        }
+        await docRef.delete();
         return true;
     }
 
-    // Método para limpar o repositório, usado apenas em testes
-    static clear() {
-        this.tasks = [];
+    // Método para limpar a coleção, usado apenas em testes
+    static async clear(): Promise<void> {
+        const snapshot = await this.tasksCollection.get();
+        const batch = db.batch();
+        snapshot.docs.forEach(doc => {
+            batch.delete(doc.ref);
+        });
+        await batch.commit();
     }
 }
 
